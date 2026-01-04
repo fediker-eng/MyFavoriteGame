@@ -1,0 +1,156 @@
+This is a script for player controll:
+You can to copy this script
+
+
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
+
+
+
+public class Player : MonoBehaviour
+{
+    public Animator _anim;
+    [SerializeField] private SpriteRenderer _Render;
+    private Rigidbody2D _RG;
+    public bool isMove = false;
+    public float JumpForceg = 10f;
+    public float speed = 0.02f;
+    public float timer = 5f;
+    public Slider Healch;
+    public Slider speed202;
+    public float sp = 100f;
+    public float Healchvl = 0f;
+    public TMP_Text frukttext;
+    public float fruktplus = 0f;
+    public TMP_Text moneytext;
+    public static float moneyplus = 0f;
+    public float twospeed;
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        _RG = GetComponent<Rigidbody2D>();
+        Healchvl = 100f / 100;
+        Healch.value = Healchvl;
+        frukttext.text = "0";
+        moneytext.text = "0";
+      
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        if(Input.GetKey(KeyCode.A)){
+            transform.Translate(Vector3.left * speed);
+            _anim.SetBool("isMoving", true);
+            isMove = true;
+            _Render.flipX = true;
+        }
+        if(Input.GetKey(KeyCode.D)){
+            transform.Translate(Vector3.right * speed);
+            _anim.SetBool("isMoving", true);
+            isMove = true;
+            _Render.flipX = false;
+
+        }
+        if(Input.GetKeyUp(KeyCode.A)){
+            transform.Translate(Vector3.left * 0.02f);
+            _anim.SetBool("isMoving", false);
+            isMove = true;
+        }
+        if(Input.GetKeyUp(KeyCode.D)){
+            transform.Translate(Vector3.left * -0.02f);
+            _anim.SetBool("isMoving", false);
+            isMove = true;
+        }
+        if(Input.GetKeyDown(KeyCode.Space)){
+            _RG.AddForce(Vector2.up * JumpForceg, ForceMode2D.Impulse);
+            _anim.SetBool("isJump", true);
+        }else{
+            _anim.SetBool("isJump", false);
+        }
+        Healch.value = Healchvl;
+        if(Healchvl <= 0){
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            fruktplus = 0;
+            moneyplus = 0;
+            frukttext.text = "" + fruktplus;
+            moneytext.text = "" + moneyplus;
+        }
+        frukttext.text = "" + fruktplus;
+        moneytext.text = "" + moneyplus;
+
+        
+
+
+
+        
+    
+
+        
+        
+        
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+                
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            _anim.SetBool("isHit", true);
+            Healchvl -= 15f / 100;
+
+            Healch.value = Healchvl;
+        }
+        else{
+            _anim.SetBool("isHit", false);
+        }
+        if (collision.gameObject.CompareTag("superspeed"))
+        {
+            Destroy(collision.gameObject);
+            speed += 0.03f;
+        }
+        if (collision.gameObject.CompareTag("HL"))
+        {
+            Healchvl += 10f / 100;
+            Healch.value  = Healchvl;
+            Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.CompareTag("Frukt"))
+        {
+            fruktplus += 1f;
+            
+            Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.CompareTag("Money"))
+        {
+            moneyplus += 1f;
+            
+            Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.CompareTag("SpikeBox"))
+        {
+            _anim.SetBool("isHit", true);
+            Healchvl -= 100f / 100;
+
+            Healch.value  = Healchvl;
+        }
+        timer -= Time.deltaTime;
+        if(timer <= 0){
+            speed = 0.02f;
+            timer = 5f;
+        }
+    }
+
+}
